@@ -12,16 +12,23 @@ export class Ristretto255Group<IntType extends BigIntType> implements Group<Exte
     add(A: ExtendedPointBase<IntType>, B: ExtendedPointBase<IntType>): ExtendedPointBase<IntType> {
         return A.add(B)
     }
-    addScalars(a: IntType, b: IntType): IntType {
-        return this._ed.Ints.add(a, b)
-    }
 
-    // ScalarOps
     scalarMultiply(A: ExtendedPointBase<IntType>, s: IntType): ExtendedPointBase<IntType> {
         return A.multiply(s)
     }
+
+    // ScalarOps
     invertScalar(a: IntType): IntType {
         return this._ed.math.mod(this._ed.math.invert(a, this._ed.CURVE.n), this._ed.CURVE.n)
+    }
+    addScalars(a: IntType, b: IntType): IntType {
+        return this._ed.math.mod(this._ed.Ints.add(a, b), this._ed.CURVE.n)
+    }
+    subtractScalars(a: IntType, b: IntType): IntType {
+        return this._ed.math.mod(this._ed.Ints.subtract(a, b), this._ed.CURVE.n)
+    }
+    multiplyScalars(a: IntType, b: IntType): IntType {
+        return this._ed.math.mod(this._ed.Ints.multiply(a, b), this._ed.CURVE.n)
     }
 
     // GroupBase

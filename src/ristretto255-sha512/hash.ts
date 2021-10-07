@@ -1,16 +1,5 @@
-import { I2OSP, Nh, OPRFCiphersuite } from '../specification-utils'
+import { I2OSP, Nh, numberArrayXOR, OPRFCiphersuite } from '../specification-utils'
 import * as hash from 'hash.js'
-
-function numberArrayXOR(a1: number[] | Uint8Array, a2: number[] | Uint8Array): Uint8Array {
-    if (a1.length !== a2.length) {
-        throw new Error('Byte arrays must be same size to XOR.')
-    }
-    const result = new Uint8Array(a1.length)
-    for (const i in a1) {
-        result[i] = a1[i] ^ a2[i]
-    }
-    return result
-}
 
 // TODO: abbstract this so it is implemented once for all siphersuites that use it
 // Specified at https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-hash-to-curve-12#section-5.4.1

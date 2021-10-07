@@ -33,6 +33,8 @@ export interface GroupOps<PointType, ScalarType> {
 
 export interface ScalarOps<ScalarType> {
     addScalars(a: ScalarType, b: ScalarType): ScalarType
+    subtractScalars(a: ScalarType, b: ScalarType): ScalarType
+    multiplyScalars(a: ScalarType, b: ScalarType): ScalarType
     invertScalar(a: ScalarType): ScalarType
 }
 

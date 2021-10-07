@@ -61,3 +61,14 @@ export function CT_EQUAL(a: Uint8Array, b: Uint8Array): boolean {
 export function makeDST(prefixString: string, contextString: Uint8Array): Uint8Array {
     return Uint8Array.from([...latin1ToBytes(prefixString), ...contextString])
 }
+
+export function numberArrayXOR(a1: number[] | Uint8Array, a2: number[] | Uint8Array): Uint8Array {
+    if (a1.length !== a2.length) {
+        throw new Error('Byte arrays must be same size to XOR.')
+    }
+    const result = new Uint8Array(a1.length)
+    for (const i in a1) {
+        result[i] = a1[i] ^ a2[i]
+    }
+    return result
+}

@@ -69,11 +69,10 @@ describe('Ristretto RFC tests', () => {
         const vEvaluatedElement = v.evaluatedElement
 
         const { skS } = ciphersuite.GG.deriveKeyPair(seed)
-        const skSBytes = ciphersuite.GG.serializeScalar(skS)
 
         const serverContext = new ServerContextImpl<PointType, JSBI>(ciphersuite, skS)
 
-        const evaluatedElement = serverContext.evaluate(skSBytes, blindedElement, info)
+        const evaluatedElement = serverContext.evaluate(blindedElement, info)
         expect(evaluatedElement).toEqual(vEvaluatedElement)
     }
 
@@ -93,14 +92,13 @@ describe('Ristretto RFC tests', () => {
         const vOutput = v.output
 
         const { skS } = ciphersuite.GG.deriveKeyPair(seed)
-        const skSBytes = ciphersuite.GG.serializeScalar(skS)
 
         const clientContext = new ClientContextImpl<PointType, JSBI>(ciphersuite)
         const serverContext = new ServerContextImpl<PointType, JSBI>(ciphersuite, skS)
 
         const { blind, blindedElement } = clientContext.blind(input)
 
-        const evaluatedElement = serverContext.evaluate(skSBytes, blindedElement, info)
+        const evaluatedElement = serverContext.evaluate(blindedElement, info)
 
         const output = clientContext.finalize(input, blind, evaluatedElement, info)
         expect(output).toEqual(vOutput)
@@ -112,20 +110,18 @@ describe('Ristretto RFC tests', () => {
         const vOutput = v.output
 
         const { skS } = ciphersuite.GG.deriveKeyPair(seed)
-        const skSBytes = ciphersuite.GG.serializeScalar(skS)
         const serverContext = new ServerContextImpl<PointType, JSBI>(ciphersuite, skS)
 
-        const output = serverContext.fullEvaluate(skSBytes, input, info)
+        const output = serverContext.fullEvaluate(input, info)
         expect(output).toEqual(vOutput)
     }
 
     function baseModeVerifyFinalize(v: BaseBatchSize1Vector) {
         const { seed, input, info, output } = v
         const { skS } = ciphersuite.GG.deriveKeyPair(seed)
-        const skSBytes = ciphersuite.GG.serializeScalar(skS)
         const serverContext = new ServerContextImpl<PointType, JSBI>(ciphersuite, skS)
 
-        const valid = serverContext.verifyFinalize(skSBytes, input, output, info)
+        const valid = serverContext.verifyFinalize(input, output, info)
         expect(valid).toBe(true)
     }
 

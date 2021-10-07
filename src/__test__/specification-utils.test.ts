@@ -1,4 +1,15 @@
-import { contextString, I2OSP, latin1ToBytes, OPRFCiphersuite, OPRFMode, OS2IP, SPEC_ID } from '../specification-utils'
+import { expand_message_xmd } from '../ristretto255-sha512/hash'
+import {
+    contextString,
+    I2OSP,
+    latin1ToBytes,
+    makeDST,
+    Nh,
+    OPRFCiphersuite,
+    OPRFMode,
+    OS2IP,
+    SPEC_ID,
+} from '../specification-utils'
 
 describe('Test specification utilities', () => {
     test('string-binary conversion', () => {
@@ -28,5 +39,19 @@ describe('Test specification utilities', () => {
 
         expect(OS2IP(xos6)).toEqual(xi)
         expect(OS2IP(xos8)).toEqual(xi)
+    })
+
+    test('Reject expansion when too big', () => {
+        const dst = makeDST('ExpansionTest-', contextString(OPRFMode.Base, OPRFCiphersuite.Ristretto255SHA512))
+        expect(() => {
+            expand_message_xmd(Uint8Array.from([0, 0, 0]), dst, 255 * Nh[OPRFCiphersuite.Ristretto255SHA512] + 1)
+        }).toThrow('Requested expanded length too large.')
+    })
+
+    test('Large expansion', () => {
+        const dst = makeDST('ExpansionTest-', contextString(OPRFMode.Base, OPRFCiphersuite.Ristretto255SHA512))
+        expect(() => {
+            expand_message_xmd(Uint8Array.from([0, 0, 0]), dst, 255 * Nh[OPRFCiphersuite.Ristretto255SHA512])
+        }).not.toThrow('Requested expanded length too large.')
     })
 })
