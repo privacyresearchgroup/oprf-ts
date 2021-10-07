@@ -47,6 +47,16 @@ export function contextString(mode: OPRFMode, cryptoSuiteId: number): Uint8Array
     const osCSID = I2OSP(cryptoSuiteId, 2)
     return Uint8Array.from([...SPEC_ID, mode, ...osCSID])
 }
+export function CT_EQUAL(a: Uint8Array, b: Uint8Array): boolean {
+    if (a.length !== b.length) {
+        throw new Error('Cannot copare arrays of different lengths.')
+    }
+    let result = true
+    for (const i in a) {
+        result &&= a[i] === b[i]
+    }
+    return result
+}
 
 export function makeDST(prefixString: string, contextString: Uint8Array): Uint8Array {
     return Uint8Array.from([...latin1ToBytes(prefixString), ...contextString])

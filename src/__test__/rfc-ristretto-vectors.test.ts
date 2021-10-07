@@ -86,6 +86,7 @@ describe('Ristretto RFC tests', () => {
         const output = clientContext.finalize(input, blind, evaluatedElement, info)
         expect(output).toEqual(vOutput)
     }
+
     function baseModeFullProtocol(v: BaseBatchSize1Vector) {
         const { seed, input, info } = v
 
@@ -105,6 +106,29 @@ describe('Ristretto RFC tests', () => {
         expect(output).toEqual(vOutput)
     }
 
+    function baseModeFullEvaluate(v: BaseBatchSize1Vector) {
+        const { seed, input, info } = v
+
+        const vOutput = v.output
+
+        const { skS } = ciphersuite.GG.deriveKeyPair(seed)
+        const skSBytes = ciphersuite.GG.serializeScalar(skS)
+        const serverContext = new ServerContextImpl<PointType, JSBI>(ciphersuite, skS)
+
+        const output = serverContext.fullEvaluate(skSBytes, input, info)
+        expect(output).toEqual(vOutput)
+    }
+
+    function baseModeVerifyFinalize(v: BaseBatchSize1Vector) {
+        const { seed, input, info, output } = v
+        const { skS } = ciphersuite.GG.deriveKeyPair(seed)
+        const skSBytes = ciphersuite.GG.serializeScalar(skS)
+        const serverContext = new ServerContextImpl<PointType, JSBI>(ciphersuite, skS)
+
+        const valid = serverContext.verifyFinalize(skSBytes, input, output, info)
+        expect(valid).toBe(true)
+    }
+
     test('A.1.1.1 Test Vector 1 Batch Size 1: ServerContext::evaluate', () => {
         baseServerContextBatchSize1Evaluate(vectorsA111)
     })
@@ -117,15 +141,31 @@ describe('Ristretto RFC tests', () => {
         baseModeFullProtocol(vectorsA111)
     })
 
-    test('A.1.1.2 Test Vector 1 Batch Size 1: ServerContext::evaluate', () => {
+    test('A.1.1.1 Test Vector 1 Batch Size 1: ServerContext::FullEvaluate', () => {
+        baseModeFullEvaluate(vectorsA111)
+    })
+
+    test('A.1.1.1 Test Vector 1 Batch Size 1: ServerContext::VerifyFinalize', () => {
+        baseModeVerifyFinalize(vectorsA111)
+    })
+
+    test('A.1.1.2 Test Vector 2 Batch Size 1: ServerContext::evaluate', () => {
         baseServerContextBatchSize1Evaluate(vectorsA112)
     })
 
-    test('A.1.1.2 Test Vector 1 Batch Size 1: ClientContext::finalize', () => {
+    test('A.1.1.2 Test Vector 2 Batch Size 1: ClientContext::finalize', () => {
         baseClientContextFinalize(vectorsA112)
     })
 
-    test('A.1.1.2 Test Vector 1 Batch Size 1: Full run with random blind', () => {
+    test('A.1.1.2 Test Vector 2 Batch Size 1: Full run with random blind', () => {
         baseModeFullProtocol(vectorsA112)
+    })
+
+    test('A.1.1.2 Test Vector 2 Batch Size 1: ServerContext::FullEvaluate', () => {
+        baseModeFullEvaluate(vectorsA112)
+    })
+
+    test('A.1.1.2 Test Vector 2 Batch Size 1: ServerContext::VerifyFinalize', () => {
+        baseModeVerifyFinalize(vectorsA112)
     })
 })
