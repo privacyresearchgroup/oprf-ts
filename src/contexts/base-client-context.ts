@@ -14,15 +14,12 @@ export interface ClientContext {
 
 export class ClientContextImpl<PointType, IntType, ScalarType = IntType> implements ClientContext {
     public readonly contextString: Uint8Array
-    constructor(private _ciphersuite: Ciphersuite<PointType, IntType, ScalarType>, private _skS: ScalarType) {
+    constructor(private _ciphersuite: Ciphersuite<PointType, IntType, ScalarType>) {
         this.contextString = contextString(OPRFMode.Base, _ciphersuite.ID)
     }
-    blind(
-        input: PrivateInput,
-        externalBlind?: SerializedScalar
-    ): { blind: SerializedScalar; blindedElement: SerializedElement } {
+    blind(input: PrivateInput): { blind: SerializedScalar; blindedElement: SerializedElement } {
         const { GG } = this._ciphersuite
-        const blind = (externalBlind && GG.deserializeScalar(externalBlind)) || GG.randomScalar()
+        const blind = GG.randomScalar()
         const P = GG.hashToGroup(input)
         const blindedElement = GG.serializeElement(GG.scalarMultiply(P, blind))
         return { blind: GG.serializeScalar(blind), blindedElement }
