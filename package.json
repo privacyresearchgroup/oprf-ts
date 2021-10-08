@@ -1,7 +1,7 @@
 {
   "name": "@privacyresearch/oprf-ts",
-  "version": "0.0.9",
-  "description": "OPRF Protocols in low-dependency TypeScript",
+  "version": "0.0.0",
+  "description": "EC-OPRF Protocols in low-dependency TypeScript",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "repository": "https://github.com/privacyresearchgroup/oprf-ts",
