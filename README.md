@@ -7,8 +7,8 @@ provides both Base and Verifiable modes of operation.
 
 | _Ciphersuite_             | _Supported_ |
 | ------------------------- | ----------- |
-| OPRF(Ristretto255,SHA512) | ✔️          |
-| OPRF(Decaf448,SHAKE-256)  | ❌          |
+| OPRF(Ristretto255, SHA512) | ✔️          |
+| OPRF(Decaf448, SHAKE-256)  | ❌          |
 | OPRF(P-256, SHA-256)      | ❌          |
 | OPRF(P-384, SHA-384)      | ❌          |
 | OPRF(P-521, SHA-512)      | ❌          |
@@ -26,7 +26,7 @@ yarn add @privacyresearch/oprf-ts
 In the examples below we work with the Ristretto255-SHA512 ciphersuite. This ciphersuite uses the
 [@privacyresearch/ed25519-ts](https://github.com/privacyresearchgroup/ed25519-ts) implementation of the Ristretto
 group, which allows programmers to choose their own implementation of arbitrary precision integers - something
-that is particularly useful when working on platforms that do not have native `bbigint` support (such as React Native).
+that is particularly useful when working on platforms that do not have native `bigint` support (such as React Native).
 
 To emphasize flexibility, these examples will use the [JSBI](https://github.com/GoogleChromeLabs/jsbi) arbitrary precision
 arithmetic library.
@@ -85,7 +85,7 @@ const output = clientContext.finalize(input, blind, evaluatedElement, info)
 #### Server Protocol in Base Mode
 
 The server will need to be initialized with its secret key, `skS`. Here is how the
-server will the client's call
+server will handle the client's call
 
 ```typescript
 import { ServerContextImpl } from '@privacyresearch/oprf-ts'
@@ -109,7 +109,7 @@ In verifiable mode, the client needs to be initialized with the server's public 
 to perform verification.
 
 ```typescript
-import { CVerifiablelientContextImpl } from '@privacyresearch/oprf-ts'
+import { VerifiableClientContextImpl } from '@privacyresearch/oprf-ts'
 const clientContext = new VerifiableClientContextImpl(ciphersuite, pkS)
 
 let input: PrivateInput // Uint8Array
@@ -126,7 +126,7 @@ const output = clientContext.verifiableFinalize(input, blind, evaluatedElement, 
 #### Server Protocol in Verifiable Mode
 
 The server will need to be initialized with its secret key, `skS`. Here is how the
-server will the client's call
+server will handle the client's call
 
 ```typescript
 import { VerifiableServerContextImpl } from '@privacyresearch/oprf-ts'
