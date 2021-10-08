@@ -5,13 +5,13 @@ provides both Base and Verifiable modes of operation.
 
 ## Implementation Status
 
-| _Ciphersuite_             | _Supported_ |
-| ------------------------- | ----------- |
+| _Ciphersuite_              | _Supported_ |
+| -------------------------- | ----------- |
 | OPRF(Ristretto255, SHA512) | ✔️          |
 | OPRF(Decaf448, SHAKE-256)  | ❌          |
-| OPRF(P-256, SHA-256)      | ❌          |
-| OPRF(P-384, SHA-384)      | ❌          |
-| OPRF(P-521, SHA-512)      | ❌          |
+| OPRF(P-256, SHA-256)       | ❌          |
+| OPRF(P-384, SHA-384)       | ❌          |
+| OPRF(P-521, SHA-512)       | ❌          |
 
 ## Installation
 
