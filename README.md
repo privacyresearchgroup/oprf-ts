@@ -120,6 +120,7 @@ const { blind, blindedElement } = clientContext.blind(input)
 // This is pseudocode - you'll know how to call your server!
 const { evaluatedElement, proof } = await callServer(blindedElement, info)
 
+// This will throw an `Error` if verification fails
 const output = clientContext.verifiableFinalize(input, blind, evaluatedElement, info)
 ```
 
@@ -136,6 +137,31 @@ const serverContext = new VerifiableServerContextImpl(ciphersuite, skS)
 const { evaluatedElement, proof } = serverContext.verifiableEvaluate(blindedElement, info)
 
 // Now return `{evaluatedElement, proof}` to the client
+```
+
+### Batch Processing
+
+Multiple inputs that use the same public info can be evaluated in a single batch call that returns a
+constant-sized proof. To do this, use the methods `verifiableEvaluateBatch` on the server and
+`verifiableFinalizeBatch` on the client:
+
+```typescript
+import { VerifiableClientContextImpl, VerifiableServerContextImpl } from '@privacyresearch/oprf-ts'
+const clientContext = new VerifiableClientContextImpl(ciphersuite, pkS)
+const serverContext = new VerifiableServerContextImpl(ciphersuite, skS)
+
+let inputs: PrivateInput[] // Uint8Array[]
+let info: PublicInput // Uint8Array
+
+const blindResults = inputs.map((input) => clientContext.blind(input))
+const blinds = blindResults.map((br) => br.blind)
+const blindedElements = blindResults.map((blindedElement) => br.blindedElement)
+
+// Just for domonstration - the server will really be somewhere else
+const { evaluatedElements, proof } = serverContext.verifiableEvaluateBatch(blindedElements, info)
+
+// This will throw an `Error` if verification fails
+const output = clientContext.verifiableFinalizeBatch(inputs, blinds, evaluatedElements, blindedElements, proof, info)
 ```
 
 ## License
