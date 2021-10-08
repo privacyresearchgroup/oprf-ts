@@ -31,8 +31,15 @@ export class VerifiableServerContextImpl<PointType, IntType, ScalarType = IntTyp
         info: Uint8Array,
         randScalar?: SerializedScalar
     ): { evaluatedElement: SerializedElement; proof: Proof } {
+        const { evaluatedElements, proof } = this.verifiableEvaluateBatch([blindedElement], info, randScalar)
+        return { evaluatedElement: evaluatedElements[0], proof }
+    }
+    verifiableEvaluateBatch(
+        blindedElements: SerializedElement[],
+        info: Uint8Array,
+        randScalar?: SerializedScalar
+    ): { evaluatedElements: SerializedElement[]; proof: Proof } {
         const { GG } = this._ciphersuite
-        const R = GG.deserializeElement(blindedElement)
         const context = Uint8Array.from([
             ...latin1ToBytes('Context-'),
             ...this.contextString,
@@ -41,25 +48,24 @@ export class VerifiableServerContextImpl<PointType, IntType, ScalarType = IntTyp
         ])
         const m = GG.hashToScalar(context)
         const t = GG.addScalars(this._skS, m)
-        const Z = GG.scalarMultiply(R, GG.invertScalar(t))
-        const evaluatedElement = GG.serializeElement(Z)
+
+        const Rs = blindedElements.map((blindedElement) => GG.deserializeElement(blindedElement))
+        const Zs = Rs.map((R) => GG.scalarMultiply(R, GG.invertScalar(t)))
+        const evaluatedElements = Zs.map((Z) => GG.serializeElement(Z))
 
         const U = GG.scalarMultiply(GG.G, t)
-        const proof = this.generateProof(t, GG.G, U, Z, R, randScalar)
-        return { evaluatedElement, proof }
+        const proof = this.generateProof(t, GG.G, U, Zs, Rs, randScalar)
+        return { evaluatedElements, proof }
     }
-
     private generateProof(
         k: ScalarType,
         A: PointType,
         B: PointType,
-        C: PointType,
-        D: PointType,
+        Cs: PointType[],
+        Ds: PointType[],
         randScalar?: SerializedScalar
     ): Proof {
         const { GG } = this._ciphersuite
-        const Cs = [C]
-        const Ds = [D]
         const [M, Z] = this.computeCompositesFast(k, B, Cs, Ds)
 
         const r = randScalar ? GG.deserializeScalar(randScalar) : GG.randomScalar()

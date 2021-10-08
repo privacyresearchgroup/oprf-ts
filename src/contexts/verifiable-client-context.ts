@@ -19,6 +19,21 @@ export interface VerifiableClientContext extends ClientContext {
         proof: Proof,
         info: PublicInput
     ): Opaque
+    verifiableUnblindBatch(
+        blinds: SerializedScalar[],
+        evaluatedElements: SerializedElement[],
+        blindedElements: SerializedElement[],
+        proof: Proof,
+        info: PublicInput
+    ): SerializedElement[]
+    verifiableFinalizeBatch(
+        inputs: PrivateInput[],
+        blinds: SerializedScalar[],
+        evaluatedElements: SerializedElement[],
+        blindedElements: SerializedElement[],
+        proof: Proof,
+        info: PublicInput
+    ): Opaque[]
 }
 
 export class VerifiableClientContextImpl<PointType, IntType, ScalarType = IntType>
@@ -37,6 +52,16 @@ export class VerifiableClientContextImpl<PointType, IntType, ScalarType = IntTyp
         proof: Proof,
         info: PublicInput
     ): SerializedElement {
+        return this.verifiableUnblindBatch([blind], [evaluatedElement], [blindedElement], proof, info)[0]
+    }
+
+    verifiableUnblindBatch(
+        blinds: SerializedScalar[],
+        evaluatedElements: SerializedElement[],
+        blindedElements: SerializedElement[],
+        proof: Proof,
+        info: PublicInput
+    ): SerializedElement[] {
         const { GG } = this._ciphersuite
 
         const context = Uint8Array.from([
@@ -47,25 +72,63 @@ export class VerifiableClientContextImpl<PointType, IntType, ScalarType = IntTyp
         ])
         const m = GG.hashToScalar(context)
 
-        const R = GG.deserializeElement(blindedElement)
-        const Z = GG.deserializeElement(evaluatedElement)
+        const Rs = blindedElements.map((blindedElement) => GG.deserializeElement(blindedElement))
+        const Zs = evaluatedElements.map((evaluatedElement) => GG.deserializeElement(evaluatedElement))
 
         const T = GG.scalarMultiply(GG.G, m)
         const U = GG.add(T, this._pkS)
 
-        if (!this.verifyProof(GG.G, U, Z, R, proof)) {
+        if (!this.verifyProofBatch(GG.G, U, Zs, Rs, proof)) {
             throw new Error('Verification Error')
         }
 
-        const blindInverse = GG.invertScalar(GG.deserializeScalar(blind))
-        const N = GG.scalarMultiply(Z, blindInverse)
-        return GG.serializeElement(N)
+        const blindInverses = blinds.map((blind) => GG.invertScalar(GG.deserializeScalar(blind)))
+        const Ns = Zs.map((Z, i) => GG.scalarMultiply(Z, blindInverses[i]))
+        return Ns.map((N) => GG.serializeElement(N))
+    }
+
+    verifiableFinalize(
+        input: PrivateInput,
+        blind: SerializedScalar,
+        evaluatedElement: SerializedElement,
+        blindedElement: SerializedElement,
+        proof: Proof,
+        info: PublicInput
+    ): Opaque {
+        return this.verifiableFinalizeBatch([input], [blind], [evaluatedElement], [blindedElement], proof, info)[0]
+    }
+
+    verifiableFinalizeBatch(
+        inputs: PrivateInput[],
+        blinds: SerializedScalar[],
+        evaluatedElements: SerializedElement[],
+        blindedElements: SerializedElement[],
+        proof: Proof,
+        info: PublicInput
+    ): Opaque[] {
+        const unblindedElements = this.verifiableUnblindBatch(blinds, evaluatedElements, blindedElements, proof, info)
+        const finalizeDST = makeDST('Finalize-', this.contextString)
+        const hashInputs = unblindedElements.map((unblindedElement, i) =>
+            Uint8Array.from([
+                ...I2OSP(inputs[i].length, 2),
+                ...inputs[i],
+                ...I2OSP(info.length, 2),
+                ...info,
+                ...I2OSP(unblindedElement.length, 2),
+                ...unblindedElement,
+                ...I2OSP(finalizeDST.length, 2),
+                ...finalizeDST,
+            ])
+        )
+        return hashInputs.map((hashInput) => this._ciphersuite.hash(hashInput))
     }
 
     verifyProof(A: PointType, B: PointType, C: PointType, D: PointType, proof: Proof): boolean {
+        return this.verifyProofBatch(A, B, [C], [D], proof)
+    }
+
+    verifyProofBatch(A: PointType, B: PointType, Cs: PointType[], Ds: PointType[], proof: Proof): boolean {
         const { GG } = this._ciphersuite
-        const Cs = [C]
-        const Ds = [D]
 
         const [M, Z] = this.computeComposites(B, Cs, Ds)
         const c = GG.deserializeScalar(proof.c)
@@ -134,28 +197,5 @@ export class VerifiableClientContextImpl<PointType, IntType, ScalarType = IntTyp
             Z = GG.add(GG.scalarMultiply(Ds[i], di), Z)
         }
         return [M, Z]
-    }
-
-    verifiableFinalize(
-        input: PrivateInput,
-        blind: SerializedScalar,
-        evaluatedElement: SerializedElement,
-        blindedElement: SerializedElement,
-        proof: Proof,
-        info: PublicInput
-    ): Opaque {
-        const unblindedElement = this.verifiableUnblind(blind, evaluatedElement, blindedElement, proof, info)
-        const finalizeDST = makeDST('Finalize-', this.contextString)
-        const hashInput = Uint8Array.from([
-            ...I2OSP(input.length, 2),
-            ...input,
-            ...I2OSP(info.length, 2),
-            ...info,
-            ...I2OSP(unblindedElement.length, 2),
-            ...unblindedElement,
-            ...I2OSP(finalizeDST.length, 2),
-            ...finalizeDST,
-        ])
-        return this._ciphersuite.hash(hashInput)
     }
 }
