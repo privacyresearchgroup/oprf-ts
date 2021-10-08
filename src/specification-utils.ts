@@ -49,7 +49,7 @@ export function contextString(mode: OPRFMode, cryptoSuiteId: number): Uint8Array
 }
 export function CT_EQUAL(a: Uint8Array, b: Uint8Array): boolean {
     if (a.length !== b.length) {
-        throw new Error('Cannot copare arrays of different lengths.')
+        throw new Error('Cannot compare arrays of different lengths.')
     }
     let result = true
     for (const i in a) {

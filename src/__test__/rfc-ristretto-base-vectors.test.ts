@@ -9,8 +9,6 @@ import { OPRFMode } from '../specification-utils'
 const ed = makeED(JSBI)
 const ciphersuite = ristretto255SHA512Ciphersuite<JSBI>(ed, OPRFMode.Base)
 
-type PointType = typeof ed.ExtendedPoint.BASE
-
 describe('Ristretto RFC tests', () => {
     test('A.1.1 test key derivation', () => {
         const seed = hexToBytes('a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3')
@@ -70,7 +68,7 @@ describe('Ristretto RFC tests', () => {
 
         const { skS } = ciphersuite.GG.deriveKeyPair(seed)
 
-        const serverContext = new ServerContextImpl<PointType, JSBI>(ciphersuite, skS)
+        const serverContext = new ServerContextImpl(ciphersuite, skS)
 
         const evaluatedElement = serverContext.evaluate(blindedElement, info)
         expect(evaluatedElement).toEqual(vEvaluatedElement)
@@ -80,7 +78,7 @@ describe('Ristretto RFC tests', () => {
         const { input, info, blind, evaluatedElement } = v
         const vOutput = v.output
 
-        const clientContext = new ClientContextImpl<PointType, JSBI>(ciphersuite)
+        const clientContext = new ClientContextImpl(ciphersuite)
 
         const output = clientContext.finalize(input, blind, evaluatedElement, info)
         expect(output).toEqual(vOutput)
@@ -93,8 +91,8 @@ describe('Ristretto RFC tests', () => {
 
         const { skS } = ciphersuite.GG.deriveKeyPair(seed)
 
-        const clientContext = new ClientContextImpl<PointType, JSBI>(ciphersuite)
-        const serverContext = new ServerContextImpl<PointType, JSBI>(ciphersuite, skS)
+        const clientContext = new ClientContextImpl(ciphersuite)
+        const serverContext = new ServerContextImpl(ciphersuite, skS)
 
         const { blind, blindedElement } = clientContext.blind(input)
 
@@ -110,7 +108,7 @@ describe('Ristretto RFC tests', () => {
         const vOutput = v.output
 
         const { skS } = ciphersuite.GG.deriveKeyPair(seed)
-        const serverContext = new ServerContextImpl<PointType, JSBI>(ciphersuite, skS)
+        const serverContext = new ServerContextImpl(ciphersuite, skS)
 
         const output = serverContext.fullEvaluate(input, info)
         expect(output).toEqual(vOutput)
@@ -119,7 +117,7 @@ describe('Ristretto RFC tests', () => {
     function baseModeVerifyFinalize(v: BaseBatchSize1Vector) {
         const { seed, input, info, output } = v
         const { skS } = ciphersuite.GG.deriveKeyPair(seed)
-        const serverContext = new ServerContextImpl<PointType, JSBI>(ciphersuite, skS)
+        const serverContext = new ServerContextImpl(ciphersuite, skS)
 
         const valid = serverContext.verifyFinalize(input, output, info)
         expect(valid).toBe(true)

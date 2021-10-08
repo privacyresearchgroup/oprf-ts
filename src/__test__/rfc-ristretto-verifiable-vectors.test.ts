@@ -9,8 +9,6 @@ import { numberArrayXOR, OPRFMode } from '../specification-utils'
 const ed = makeED(JSBI)
 const ciphersuite = ristretto255SHA512Ciphersuite<JSBI>(ed, OPRFMode.Verified)
 
-type PointType = typeof ed.ExtendedPoint.BASE
-
 describe('Ristretto RFC tests', () => {
     test('A.1.2 test key derivation', () => {
         //     seed = a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3a3
@@ -92,7 +90,7 @@ describe('Ristretto RFC tests', () => {
 
         const { skS } = ciphersuite.GG.deriveKeyPair(seed)
 
-        const serverContext = new VerifiableServerContextImpl<PointType, JSBI>(ciphersuite, skS)
+        const serverContext = new VerifiableServerContextImpl(ciphersuite, skS)
 
         const evaluatedElement = serverContext.evaluate(blindedElement, info)
         expect(evaluatedElement).toEqual(vEvaluatedElement)
@@ -104,7 +102,7 @@ describe('Ristretto RFC tests', () => {
 
         const pkS = ciphersuite.GG.deserializeElement(v.pkS)
 
-        const clientContext = new VerifiableClientContextImpl<PointType, JSBI>(ciphersuite, pkS)
+        const clientContext = new VerifiableClientContextImpl(ciphersuite, pkS)
 
         const output = clientContext.finalize(input, blind, evaluatedElement, info)
         expect(output).toEqual(vOutput)
@@ -117,8 +115,8 @@ describe('Ristretto RFC tests', () => {
 
         const { skS, pkS } = ciphersuite.GG.deriveKeyPair(seed)
 
-        const clientContext = new VerifiableClientContextImpl<PointType, JSBI>(ciphersuite, pkS)
-        const serverContext = new VerifiableServerContextImpl<PointType, JSBI>(ciphersuite, skS)
+        const clientContext = new VerifiableClientContextImpl(ciphersuite, pkS)
+        const serverContext = new VerifiableServerContextImpl(ciphersuite, skS)
 
         const { blind, blindedElement } = clientContext.blind(input)
 
@@ -134,7 +132,7 @@ describe('Ristretto RFC tests', () => {
         const vOutput = v.output
 
         const { skS } = ciphersuite.GG.deriveKeyPair(seed)
-        const serverContext = new VerifiableServerContextImpl<PointType, JSBI>(ciphersuite, skS)
+        const serverContext = new VerifiableServerContextImpl(ciphersuite, skS)
 
         const output = serverContext.fullEvaluate(input, info)
         expect(output).toEqual(vOutput)
@@ -143,7 +141,7 @@ describe('Ristretto RFC tests', () => {
     function verifiableModeVerifyFinalize(v: VerifiableBatchSize1Vector) {
         const { seed, input, info, output } = v
         const { skS } = ciphersuite.GG.deriveKeyPair(seed)
-        const serverContext = new VerifiableServerContextImpl<PointType, JSBI>(ciphersuite, skS)
+        const serverContext = new VerifiableServerContextImpl(ciphersuite, skS)
 
         const valid = serverContext.verifyFinalize(input, output, info)
         expect(valid).toBe(true)
@@ -159,8 +157,8 @@ describe('Ristretto RFC tests', () => {
 
         const { pkS } = ciphersuite.GG.deriveKeyPair(seed)
         const badPKS = ciphersuite.GG.add(ciphersuite.GG.G, pkS)
-        const clientContext = new VerifiableClientContextImpl<PointType, JSBI>(ciphersuite, pkS)
-        const badPKClientContext = new VerifiableClientContextImpl<PointType, JSBI>(ciphersuite, badPKS)
+        const clientContext = new VerifiableClientContextImpl(ciphersuite, pkS)
+        const badPKClientContext = new VerifiableClientContextImpl(ciphersuite, badPKS)
         expect(() => {
             clientContext.verifiableFinalize(input, blind, evaluatedElement, blindedElement, proof, info)
         }).not.toThrow()
@@ -181,7 +179,7 @@ describe('Ristretto RFC tests', () => {
 
         const { skS } = GG.deriveKeyPair(seed)
 
-        const server = new VerifiableServerContextImpl<PointType, JSBI>(ciphersuite, skS)
+        const server = new VerifiableServerContextImpl(ciphersuite, skS)
 
         const { evaluatedElement, proof } = server.verifiableEvaluate(v.blindedElement, info, proofRandomScalar)
         expect(evaluatedElement).toEqual(v.evaluatedElement)
