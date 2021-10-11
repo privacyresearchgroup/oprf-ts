@@ -1,3 +1,5 @@
+// (c) 2021 Privacy Research, LLC https://privacyresearch.io,  GPL-v3-only: see LICENSE file.
+
 import { BigIntType, Ed25519Type, ExtendedPointBase } from '@privacyresearch/ed25519-ts'
 import { OPRFCiphersuite, OPRFMode } from '../specification-utils'
 import { Ciphersuite } from '../types'

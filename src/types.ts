@@ -1,3 +1,5 @@
+// (c) 2021 Privacy Research, LLC https://privacyresearch.io,  GPL-v3-only: see LICENSE file.
+
 import { OPRFCiphersuite } from './specification-utils'
 
 export type SerializedElement = Uint8Array
