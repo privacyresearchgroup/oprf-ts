@@ -5,13 +5,22 @@ provides both Base and Verifiable modes of operation.
 
 ## Implementation Status
 
-| _Ciphersuite_              | _Supported_ |
-| -------------------------- | ----------- |
-| OPRF(Ristretto255, SHA512) | ✔️          |
-| OPRF(Decaf448, SHAKE-256)  | ❌          |
-| OPRF(P-256, SHA-256)       | ❌          |
-| OPRF(P-384, SHA-384)       | ❌          |
-| OPRF(P-521, SHA-512)       | ❌          |
+This protocol implementation is generic, allowing users to create server and client contexts using their own
+implementations of ciphersuites. So if a user implements, for example, a Decaf448-SHAKE256 ciphersuite then
+this library can use it to execute the VOPRF protocol. This provides flexibility to users as well as a
+degree of future-proofing - as better ciphersuite implementations arise they will be usable (almost) out
+of the box with this library.
+
+With that said, standard ciphersuite implementations are still needed. The table below shows the current state
+of support.
+
+| _Ciphersuite_              | _Supported_ | _Curve Implementation_                                                            | _Notes_                                      |
+| -------------------------- | ----------- | --------------------------------------------------------------------------------- | -------------------------------------------- |
+| OPRF(Ristretto255, SHA512) | ✔️          | [@privacyresearch/ed25519-ts](https://github.com/privacyresearchgroup/ed25519-ts) | Configurable BigInt and Hash implementations |
+| OPRF(Decaf448, SHAKE-256)  | ❌          |                                                                                   |                                              |
+| OPRF(P-256, SHA-256)       | ❌          |                                                                                   |                                              |
+| OPRF(P-384, SHA-384)       | ❌          |                                                                                   |                                              |
+| OPRF(P-521, SHA-512)       | ❌          |                                                                                   |                                              |
 
 ## Installation
 
