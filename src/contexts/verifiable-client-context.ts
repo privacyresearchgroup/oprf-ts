@@ -1,3 +1,5 @@
+// (c) 2021 Privacy Research, LLC https://privacyresearch.io,  GPL-v3-only: see LICENSE file.
+
 import { contextString, CT_EQUAL, I2OSP, latin1ToBytes, makeDST, OPRFMode } from '../specification-utils'
 import { Ciphersuite, Opaque, PrivateInput, PublicInput, SerializedElement, SerializedScalar } from '../types'
 import { ClientContext, ClientContextImpl } from './base-client-context'

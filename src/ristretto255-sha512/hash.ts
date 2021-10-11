@@ -1,3 +1,5 @@
+// (c) 2021 Privacy Research, LLC https://privacyresearch.io,  GPL-v3-only: see LICENSE file.
+
 import { I2OSP, Nh, numberArrayXOR, OPRFCiphersuite } from '../specification-utils'
 import * as hash from 'hash.js'
 

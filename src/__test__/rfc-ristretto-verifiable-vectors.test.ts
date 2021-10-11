@@ -1,3 +1,5 @@
+// (c) 2021 Privacy Research, LLC https://privacyresearch.io,  GPL-v3-only: see LICENSE file.
+
 import { makeED } from '@privacyresearch/ed25519-ts'
 import { hexToBytes } from '@privacyresearch/ed25519-ts/lib/serialization'
 import JSBI from 'jsbi'
