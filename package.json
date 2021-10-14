@@ -39,7 +39,11 @@
     "typescript": "^4.3.2"
   },
   "files": [
-    "lib/**/*.js",
-    "lib/**/*.d.ts"
+    "lib/*.js",
+    "lib/*.d.ts",
+    "lib/contexts/*.js",
+    "lib/contexts/*.d.ts",
+    "lib/ristretto255-sha512/*.js",
+    "lib/ristretto255-sha512/*.d.ts"
   ]
 }
