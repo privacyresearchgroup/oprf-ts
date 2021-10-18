@@ -53,11 +53,11 @@ export function CT_EQUAL(a: Uint8Array, b: Uint8Array): boolean {
     if (a.length !== b.length) {
         throw new Error('Cannot compare arrays of different lengths.')
     }
-    let result = true
-    for (const i in a) {
-        result &&= a[i] === b[i]
+    let result = 1
+    for (let i = 0; i < a.length; ++i) {
+        result *= a[i] === b[i] ? 1 : 0
     }
-    return result
+    return result !== 0
 }
 
 export function makeDST(prefixString: string, contextString: Uint8Array): Uint8Array {
