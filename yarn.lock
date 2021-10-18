@@ -543,10 +543,24 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@privacyresearch/ciphersuite-shared@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@privacyresearch/ciphersuite-shared/-/ciphersuite-shared-0.0.3.tgz#3fe6bdb5b13233b6a1515d9c1a6a75132dfd3aa1"
+  integrity sha512-Z34+TpzNRf/4lT+l2IuyoTm4zauIioDfOEMWE0R6tXw2Bbtnbu3lGv80ZsMiB+WyKbfPiMD6Hywhx/NUEkl+uw==
+
 "@privacyresearch/ed25519-ts@^0.0.1-rc":
   version "0.0.1-rc"
   resolved "https://registry.yarnpkg.com/@privacyresearch/ed25519-ts/-/ed25519-ts-0.0.1-rc.tgz#7a9adbd0fe248ff19979bc4de10d473f8ecad723"
   integrity sha512-Xv+yh373/IhvQ7Zc3NLNM4WQ2JWfuUrSdlijf8Xmfr823NfFu58ToXE9SzC1osYsYTqtBHDV9ksmN8aF7ONnsQ==
+
+"@privacyresearch/noble-ciphersuite-r255s256@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@privacyresearch/noble-ciphersuite-r255s256/-/noble-ciphersuite-r255s256-0.0.1.tgz#1bc60d7b33f121c771d2f48e4f0bb221373ad965"
+  integrity sha512-iHav6EObWo/Ch/KznzepUJyKsuaNozsPCMYuko1yi2HKQkadpEUrx8tGzT5Wf70FOoDBzYRRFZcm0RhB6qCoSw==
+  dependencies:
+    "@privacyresearch/ciphersuite-shared" "^0.0.3"
+    hash.js "^1.1.7"
+    noble-ed25519 "^1.2.6"
 
 "@sinonjs/commons@^1.7.0":
   version "1.8.3"
@@ -2437,6 +2451,11 @@ natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
+
+noble-ed25519@^1.2.6:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/noble-ed25519/-/noble-ed25519-1.2.6.tgz#a55b75c61da000498abb43ffd81caaa370bfed22"
+  integrity sha512-zfnWqg9FVMp8CnzUpAjbt1nDXpDjCvxYiCXdnW1mY8zQHw/6twUlkFm14VPdojVzc0kcd+i9zT79+26GcNbsuQ==
 
 node-int64@^0.4.0:
   version "0.4.0"
