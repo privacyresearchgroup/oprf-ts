@@ -173,6 +173,19 @@ const { evaluatedElements, proof } = serverContext.verifiableEvaluateBatch(blind
 const output = clientContext.verifiableFinalizeBatch(inputs, blinds, evaluatedElements, blindedElements, proof, info)
 ```
 
+## Implementing New Ciphersuites
+
+A good place to get started when developing a new ciphersuite for use with this library is the [Privacy Research
+`ciphersuites` repository](https://github.com/privacyresearchgroup/ciphersuites). There you will find
+
+- Type definitions for groups, scalars, and ciphersuites
+- Implementations of standard functions such as `I2OSP`, `OS2IP`, `CT_EQUAL`, and `expand_message_xmd`
+- Ciphersuite implementations, including `@privacyresearch/noble-restretto255-sha256`, an implementation
+  of the `OPRF(Ristretto255, SHA256)` ciphersuite based on [`noble-ed25519`](https://github.com/paulmillr/noble-ed25519).
+  To see this ciphersuite in use, look at this [unit test](https://github.com/privacyresearchgroup/oprf-ts/blob/main/src/__test__/rfc-ristretto-batch-verifiable-vectors-noble-ciphersuite.test.ts).
+
+  _This implementation uses the native `bigint` and is much faster than the `JSBI` implementation described above. If `bigint`s are available and acceptable for your application, `nobe-ed25519` is preferred._
+
 ## License
 
 (c) 2021 Privacy Research, LLC [(https://privacyresearch.io)](https://privacyresearch.io), see LICENSE file.
